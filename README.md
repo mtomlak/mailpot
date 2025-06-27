@@ -41,3 +41,23 @@ The IMAP profile supports custom responses for standard commands. In addition to
 `LOGIN` and `LOGOUT`, the handler understands the `STARTTLS`, `AUTHENTICATE`, and
 `NOOP` commands, returning the strings configured in the profile.
 
+
+## POP3 honeypot
+
+`mailpot/pop3.py` provides a small POP3 server that works the same way as the SMTP and IMAP honeypots. It reads its replies from `/var/local/mailpot/pop3_profile.json` unless another file is supplied with `--config`.
+
+```bash
+python3 -m mailpot.pop3 --host 0.0.0.0 --port 1110 --config pop3_profile.json
+```
+
+A minimal profile might look like:
+
+```json
+{
+  "banner": "+OK POP3 ready",
+  "STAT": "+OK 0 0",
+  "LIST": "+OK 0 messages\n.",
+  "RETR": "+OK 0 octets\n.",
+  "QUIT": "+OK bye"
+}
+```
