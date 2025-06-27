@@ -1,15 +1,31 @@
 # Mailpot
 
-This repository contains a simple SMTP honeypot implementation in `mailpot/smtp.py`.
+This repository contains a simple SMTP honeypot implementation in `servers/smtp.py`.
 
 The honeypot mimics an SMTP server by reading command responses from a JSON
 profile. By default it looks for `/var/local/mailpot/smtp_profile.json`, but you
 can supply a different path with `--config`.
 
+
+Clone this repository into `/var/local/mailpot` so the default paths work.
+The layout should be:
+
+```
+/var/local/mailpot/
+  servers/
+    smtp.py
+    imap.py
+  smtp_harvester.py
+  imap_harvester.py
+  pop3_harvester.py
+  smtp_profile.json
+  imap_profile.json
+```
+
 ## Running
 
 ```bash
-python3 -m mailpot.smtp --host 0.0.0.0 --port 2525 --config sample_profile.json
+python3 servers/smtp.py --host 0.0.0.0 --port 2525 --config smtp_profile.json
 ```
 
 A sample JSON profile is provided below for convenience.
@@ -29,12 +45,12 @@ A sample JSON profile is provided below for convenience.
 
 ## IMAP honeypot
 
-`mailpot/imap.py` implements a minimal IMAP server that behaves similarly to the
+`servers/imap.py` implements a minimal IMAP server that behaves similarly to the
 SMTP honeypot. It reads its responses from `/var/local/mailpot/imap_profile.json`
 unless a different file is provided with `--config`.
 
 ```bash
-python3 -m mailpot.imap --host 0.0.0.0 --port 1143 --config imap_profile.json
+python3 servers/imap.py --host 0.0.0.0 --port 1143 --config imap_profile.json
 ```
 
 The IMAP profile supports custom responses for standard commands. In addition to
