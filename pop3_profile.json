@@ -1,0 +1,12 @@
+{
+  "banner": "+OK POP3 ready",
+  "USER": "+OK",
+  "PASS": "-ERR invalid login",
+  "STAT": "+OK 0 0",
+  "LIST": "+OK 0 messages\n.",
+  "RETR": "+OK 0 octets\n.",
+  "DELE": "+OK",
+  "NOOP": "+OK",
+  "RSET": "+OK",
+  "QUIT": "+OK bye"
+}
