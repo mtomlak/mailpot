@@ -1,0 +1,8 @@
+{
+  "banner": "OK IMAP4rev1 Service Ready",
+  "BYE": "BYE Logging out",
+  "LOGOUT": "OK LOGOUT completed",
+  "STARTTLS": "OK Begin TLS negotiation now",
+  "AUTHENTICATE": "NO AUTHENTICATE not supported",
+  "NOOP": "OK NOOP completed"
+}

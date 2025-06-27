@@ -27,3 +27,17 @@ A sample JSON profile is provided below for convenience.
 }
 ```
 
+## IMAP honeypot
+
+`mailpot/imap.py` implements a minimal IMAP server that behaves similarly to the
+SMTP honeypot. It reads its responses from `/var/local/mailpot/imap_profile.json`
+unless a different file is provided with `--config`.
+
+```bash
+python3 -m mailpot.imap --host 0.0.0.0 --port 1143 --config imap_profile.json
+```
+
+The IMAP profile supports custom responses for standard commands. In addition to
+`LOGIN` and `LOGOUT`, the handler understands the `STARTTLS`, `AUTHENTICATE`, and
+`NOOP` commands, returning the strings configured in the profile.
+
