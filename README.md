@@ -15,11 +15,13 @@ The layout should be:
   servers/
     smtp.py
     imap.py
+    pop3.py
   smtp_harvester.py
   imap_harvester.py
   pop3_harvester.py
   smtp_profile.json
   imap_profile.json
+  pop3_profile.json
 ```
 
 ## Running
@@ -56,4 +58,24 @@ python3 servers/imap.py --host 0.0.0.0 --port 1143 --config imap_profile.json
 The IMAP profile supports custom responses for standard commands. In addition to
 `LOGIN` and `LOGOUT`, the handler understands the `STARTTLS`, `AUTHENTICATE`, and
 `NOOP` commands, returning the strings configured in the profile.
+
+## POP3 honeypot
+
+`servers/pop3.py` provides a small POP3 server that works the same way as the SMTP and IMAP honeypots. It reads its replies from `/var/local/mailpot/pop3_profile.json` unless another file is supplied with `--config`.
+
+```bash
+python3 servers/pop3.py --host 0.0.0.0 --port 1110 --config pop3_profile.json
+```
+
+A minimal profile might look like:
+
+```json
+{
+  "banner": "+OK POP3 ready",
+  "STAT": "+OK 0 0",
+  "LIST": "+OK 0 messages\n.",
+  "RETR": "+OK 0 octets\n.",
+  "QUIT": "+OK bye"
+}
+```
 
