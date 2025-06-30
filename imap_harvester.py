@@ -7,18 +7,18 @@ IMAP_PORT = 143
 
 responses = {}
 
-print(f"Connecting to {IMAP_HOST}:{IMAP_PORT}...")
+print("Connecting to {}:{}...".format(IMAP_HOST, IMAP_PORT))
 with socket.create_connection((IMAP_HOST, IMAP_PORT), timeout=60) as sock:
     file = sock.makefile("rwb", buffering=0)
 
     def recv_line():
         line = file.readline().decode("utf-8", errors="ignore").strip()
-        print(f"RECV: {line}")
+        print("RECV: {}".format(line))
         return line
 
     def send(tag, cmd):
-        full = f"{tag} {cmd}"
-        print(f"SENT: {full}")
+        full = "{} {}".format(tag, cmd)
+        print("SENT: {}".format(full))
         file.write((full + "\r\n").encode("utf-8"))
         time.sleep(0.5)
         return recv_line()

@@ -17,7 +17,7 @@ class POP3Handler(socketserver.StreamRequestHandler):
 
     def handle(self) -> None:
         peer = self.connection.getpeername()
-        syslog.syslog(syslog.LOG_INFO, f"[pop3-honeypot] Connection from {peer[0]}:{peer[1]}")
+        syslog.syslog(syslog.LOG_INFO, "[pop3-honeypot] Connection from {}:{}".format(peer[0], peer[1]))
         self.server.logger.info("Connection from %s:%s", peer[0], peer[1])
 
         def send(line: str) -> None:
@@ -68,7 +68,7 @@ class POP3Handler(socketserver.StreamRequestHandler):
                     key = line if line in profile else cmd
                     send(profile.get(key, "-ERR unrecognized command"))
             except Exception as exc:  # pragma: no cover - logging
-                msg = f"[pop3-honeypot] Error: {exc}"
+                msg = "[pop3-honeypot] Error: {}".format(exc)
                 syslog.syslog(syslog.LOG_ERR, msg)
                 self.server.logger.error(msg)
                 break
