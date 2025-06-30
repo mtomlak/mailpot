@@ -34,16 +34,20 @@ class SMTPHandler(socketserver.StreamRequestHandler):
                 line = expect()
                 if not line:
                     break
-                cmd = line.split()[0].upper()
+                parts = line.split()
+                if not parts:
+                    continue
+                cmd = parts[0].upper()
+                upper_line = line.upper()
 
-                if cmd == "AUTH" and "LOGIN" in line:
+                if cmd == "AUTH" and "LOGIN" in line.upper():
                     send(profile.get("AUTH LOGIN", "334 VXNlcm5hbWU6"))
                     expect()  # username
                     send(profile.get("AUTH LOGIN user", "334 UGFzc3dvcmQ6"))
                     expect()  # password
                     time.sleep(self.server.fail_delay)
                     send(profile.get("AUTH LOGIN pass", "535 5.7.8 Error: authentication failed"))
-                elif cmd == "AUTH" and "PLAIN" in line:
+                elif cmd == "AUTH" and "PLAIN" in line.upper():
                     time.sleep(self.server.fail_delay)
                     send(profile.get("AUTH PLAIN", "535 5.7.8 Error: authentication failed"))
                 elif cmd == "DATA":
@@ -53,6 +57,33 @@ class SMTPHandler(socketserver.StreamRequestHandler):
                         if l == ".":
                             break
                     send(profile.get("DATA body", "250 Ok"))
+                elif upper_line.startswith("MAIL FROM"):
+                    send(profile.get("MAIL FROM", "250 Ok"))
+                elif upper_line.startswith("RCPT TO"):
+                    send(profile.get("RCPT TO", "250 Ok"))
+                elif cmd in {"RSET", "NOOP"}:
+                    send(profile.get(cmd, "250 Ok"))
+                elif cmd in {"VRFY", "EXPN", "ETRN"}:
+                    send(profile.get(cmd, "250 Ok"))
+                elif cmd == "HELP":
+                    send(profile.get("HELP", "214 Help"))
+                elif cmd == "STARTTLS":
+                    send(profile.get("STARTTLS", "220 Ready to start TLS"))
+                elif cmd in {"HELO", "EHLO"}:
+                    # try exact line, then alias between HELO/EHLO
+                    key = line
+                    if key not in profile:
+                        alias_cmd = "HELO" if cmd == "EHLO" else "EHLO"
+                        alias_line = alias_cmd + line[len(cmd):]
+                        if alias_line in profile:
+                            key = alias_line
+                        elif cmd in profile:
+                            key = cmd
+                        elif alias_cmd in profile:
+                            key = alias_cmd
+                        else:
+                            key = cmd
+                    send(profile.get(key, "250 Ok"))
                 elif cmd == "QUIT":
                     send(profile.get("QUIT", "221 Bye"))
                     break
