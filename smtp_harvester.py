@@ -31,7 +31,9 @@ with socket.create_connection((SMTP_HOST, SMTP_PORT), timeout=60) as sock:
     print("Getting banner...")
     responses["banner"] = recv_response()
 
-    responses["EHLO test.local"] = send("EHLO test.local")
+    # EHLO responses are often multi-line and contain server capabilities.
+    resp_ehlo = send("EHLO test.local")
+    responses["EHLO test.local"] = resp_ehlo
     responses["AUTH PLAIN"] = send("AUTH PLAIN {}".format(base64.b64encode(b"\0user\0pass").decode()))
     responses["AUTH LOGIN"] = send("AUTH LOGIN")
     responses["AUTH LOGIN user"] = send(base64.b64encode(b"user").decode())
