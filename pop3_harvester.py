@@ -7,13 +7,13 @@ POP3_PORT = 110
 
 responses = {}
 
-print(f"Connecting to {POP3_HOST}:{POP3_PORT}...")
+print("Connecting to {}:{}...".format(POP3_HOST, POP3_PORT))
 with socket.create_connection((POP3_HOST, POP3_PORT), timeout=60) as sock:
     file = sock.makefile("rwb", buffering=0)
 
     def recv_line():
         line = file.readline().decode("utf-8", errors="ignore").strip()
-        print(f"RECV: {line}")
+        print("RECV: {}".format(line))
         return line
 
     def recv_multiline():
@@ -26,7 +26,7 @@ with socket.create_connection((POP3_HOST, POP3_PORT), timeout=60) as sock:
         return "\n".join(lines)
 
     def send(cmd, multiline=False):
-        print(f"SENT: {cmd}")
+        print("SENT: {}".format(cmd))
         file.write((cmd + "\r\n").encode("utf-8"))
         time.sleep(0.5)
         return recv_multiline() if multiline else recv_line()

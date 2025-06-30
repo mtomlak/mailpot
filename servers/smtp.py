@@ -17,7 +17,7 @@ class SMTPHandler(socketserver.StreamRequestHandler):
 
     def handle(self) -> None:
         peer = self.connection.getpeername()
-        syslog.syslog(syslog.LOG_INFO, f"[smtp-honeypot] Connection from {peer[0]}:{peer[1]}")
+        syslog.syslog(syslog.LOG_INFO, "[smtp-honeypot] Connection from {}:{}".format(peer[0], peer[1]))
         self.server.logger.info("Connection from %s:%s", peer[0], peer[1])
 
         def send(line: str) -> None:
@@ -60,7 +60,7 @@ class SMTPHandler(socketserver.StreamRequestHandler):
                     key = line if line in profile else cmd
                     send(profile.get(key, "502 5.5.2 Command not recognized"))
             except Exception as exc:  # pragma: no cover - logging
-                msg = f"[smtp-honeypot] Error: {exc}"
+                msg = "[smtp-honeypot] Error: {}".format(exc)
                 syslog.syslog(syslog.LOG_ERR, msg)
                 self.server.logger.error(msg)
                 break

@@ -17,7 +17,7 @@ class IMAPHandler(socketserver.StreamRequestHandler):
 
     def handle(self) -> None:
         peer = self.connection.getpeername()
-        syslog.syslog(syslog.LOG_INFO, f"[imap-honeypot] Connection from {peer[0]}:{peer[1]}")
+        syslog.syslog(syslog.LOG_INFO, "[imap-honeypot] Connection from {}:{}".format(peer[0], peer[1]))
         self.server.logger.info("Connection from %s:%s", peer[0], peer[1])
 
         def send(line: str) -> None:
@@ -28,7 +28,7 @@ class IMAPHandler(socketserver.StreamRequestHandler):
 
         profile = self.server.profile
         banner = profile.get("banner", "OK IMAP4rev1 Service Ready")
-        send(f"* {banner}")
+        send("* {}".format(banner))
 
         while True:
             try:
@@ -44,29 +44,29 @@ class IMAPHandler(socketserver.StreamRequestHandler):
                 if cmd == "LOGIN":
                     time.sleep(self.server.fail_delay)
                     resp = profile.get("LOGIN", "NO LOGIN failed")
-                    send(f"{tag} {resp}")
+                    send("{} {}".format(tag, resp))
                 elif cmd == "STARTTLS":
                     resp = profile.get("STARTTLS", "OK Begin TLS negotiation now")
-                    send(f"{tag} {resp}")
+                    send("{} {}".format(tag, resp))
                 elif cmd == "AUTHENTICATE":
                     time.sleep(self.server.fail_delay)
                     resp = profile.get("AUTHENTICATE", "NO AUTHENTICATE not supported")
-                    send(f"{tag} {resp}")
+                    send("{} {}".format(tag, resp))
                 elif cmd == "NOOP":
                     resp = profile.get("NOOP", "OK NOOP completed")
-                    send(f"{tag} {resp}")
+                    send("{} {}".format(tag, resp))
                 elif cmd == "LOGOUT":
                     resp = profile.get("LOGOUT", "OK LOGOUT completed")
                     bye = profile.get("BYE", "BYE Logging out")
-                    send(f"* {bye}")
-                    send(f"{tag} {resp}")
+                    send("* {}".format(bye))
+                    send("{} {}".format(tag, resp))
                     break
                 else:
                     key = line if line in profile else cmd
                     resp = profile.get(key, "BAD Command not recognized")
-                    send(f"{tag} {resp}")
+                    send("{} {}".format(tag, resp))
             except Exception as exc:  # pragma: no cover - logging
-                msg = f"[imap-honeypot] Error: {exc}"
+                msg = "[imap-honeypot] Error: {}".format(exc)
                 syslog.syslog(syslog.LOG_ERR, msg)
                 self.server.logger.error(msg)
                 break
