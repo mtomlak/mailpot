@@ -11,6 +11,22 @@ import time
 
 DEFAULT_CONFIG = "/var/local/mailpot/smtp_profile.json"
 
+# Default responses used when no profile entry is found.  The EHLO response
+# mirrors a typical multi-line reply from a real SMTP server.
+DEFAULT_HELO = "250 smtp.mx.profiweb.biz"
+DEFAULT_EHLO = (
+    "250-smtp.mx.profiweb.biz\n"
+    "250-PIPELINING\n"
+    "250-SIZE 1073741824\n"
+    "250-VRFY\n"
+    "250-ETRN\n"
+    "250-STARTTLS\n"
+    "250-AUTH PLAIN LOGIN\n"
+    "250-ENHANCEDSTATUSCODES\n"
+    "250-8BITMIME\n"
+    "250 DSN"
+)
+
 
 class SMTPHandler(socketserver.StreamRequestHandler):
     """Handle SMTP interactions based on a JSON profile."""
@@ -83,7 +99,8 @@ class SMTPHandler(socketserver.StreamRequestHandler):
                             key = alias_cmd
                         else:
                             key = cmd
-                    send(profile.get(key, "250 Ok"))
+                    default_resp = DEFAULT_EHLO if cmd == "EHLO" else DEFAULT_HELO
+                    send(profile.get(key, default_resp))
                 elif cmd == "QUIT":
                     send(profile.get("QUIT", "221 Bye"))
                     break
